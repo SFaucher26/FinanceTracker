@@ -2,6 +2,7 @@ package com.simplon.FinanceTracker.Controllers;
 
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,7 +27,10 @@ public class CategoryController {
     }
     @PostMapping(value ="/category", produces = MediaType.APPLICATION_JSON_VALUE)
     public Category createCategory(@RequestBody CategoryDto categoryDto, Authentication authentication) {
-        User currentUser = userRepository.findByUsername(authentication.getName()).orElseThrow();
+        // récupération de l'utilisateur via username
+        String username = authentication.getName();
+        User currentUser = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         Category category = Category.builder()
                 .name(categoryDto.getName())
