@@ -35,10 +35,10 @@ classDiagram
 
     %% ======= RELATIONS =======
 
-    User "1" --> "*" Transaction : owns
+    User "1" --> "*" Transaction : owner
     Transaction "*" --> "1" Category : categorized as
     Transaction "*" --> "1" PaymentMethod : paid with
     User "1" --> "*" Category : creates
-    User "1" --> "*" PaymentMethod : owns
+    User "1" --> "*" PaymentMethod : owner
 
 ```
