@@ -1,6 +1,5 @@
 package com.simplon.FinanceTracker.Controllers;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
@@ -43,35 +42,46 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody LoginDto loginDto) {
+        // Vérifie si un utilisateur avec ce nom existe déjà dans la base
         boolean userExist = userRepository.findByUsername(loginDto.getUsername()).isPresent();
+
+        // Si oui, on lève une exception pour dire que le nom est déjà pris
         if (userExist) {
             throw new EntityExistsException("Username already exists in database");
         }
+
+        // Sinon, on crée un nouvel utilisateur avec les infos reçues
         User user = userRepository.saveAndFlush(User.builder()
-                .username(loginDto.getUsername())
-                .name(loginDto.getUsername())
-                .password(passwordEncoder.encode(loginDto.getPassword()))
+                .username(loginDto.getUsername()) // on met le username
+                .name(loginDto.getName())     // le name
+                .password(passwordEncoder.encode(loginDto.getPassword())) // on encode le mot de passe
                 .build()
         );
-        // renvoie un message de succès
+
+        // On renvoie un message pour dire que l'inscription a réussi
         return ResponseEntity.ok("successful");
     }
 
     @PostMapping(value ="/authenticate", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AuthenticatedDto> authenticate(@RequestBody LoginDto loginDto) {
+        // On vérifie si le nom d'utilisateur et le mot de passe sont corrects
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginDto.getUsername(),
                         loginDto.getPassword())
         );
 
+        // Si c'est bon, on récupère les infos de l'utilisateur connecté
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+
+        // On crée un token JWT pour cet utilisateur (pour garder la session)
         String jwt = jwtUtils.generateToken(userDetails.getUsername());
 
-        // récupère l'utilisateur dans la base
+        // On cherche l'utilisateur dans la base pour récupérer son ID et son nom
         User user = userRepository.findByUsername(userDetails.getUsername())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
+        // On renvoie le token et les infos utilisateur au client
         return ResponseEntity.ok(new AuthenticatedDto(jwt, user.getId(), user.getUsername()));
     }
 }

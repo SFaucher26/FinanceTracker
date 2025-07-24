@@ -1,5 +1,8 @@
 package com.simplon.FinanceTracker.Services;
 
+import java.util.List;
+
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -26,5 +29,6 @@ import lombok.extern.slf4j.Slf4j;
                     .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
             return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), new java.util.ArrayList<>());
         }
+
     }
 

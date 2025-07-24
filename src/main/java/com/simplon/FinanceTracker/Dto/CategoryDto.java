@@ -4,8 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter @Setter
-public class LoginDto {
-public String username;
-public String name;
-public String password;
+public class CategoryDto {
+    private String name;
+    private String color;
+    private String limit;
 }
